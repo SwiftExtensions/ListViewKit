@@ -89,8 +89,6 @@ public class ListView: UITableView {
     private func initialSetup() {
         self.dataSource = self
         self.delegate = self
-        
-        self.register(UITableViewCell.self)
     }
     /**
      Configurates an item for row at specific indexPath to present in the listView.
@@ -147,9 +145,16 @@ extension ListView: UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(UITableViewCell.self, for: indexPath)
+        let cell: UITableViewCell
+        if let reusableCell = tableView.dequeueReusableCell(withIdentifier: "UITableViewCell") {
+            cell = reusableCell
+        } else {
+            cell = UITableViewCell(style: .default, reuseIdentifier: "UITableViewCell")
+        }
+        
         let item = self.listViewItems?[indexPath.item] ?? self.itemForRowAt?(indexPath)
         cell.textLabel?.text = item
+        cell.detailTextLabel?.text = "test"
         
         return cell
     }
