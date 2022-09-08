@@ -38,7 +38,7 @@ public class ListView: UITableView {
      
      Resets `numberOfItems` and `configureItemForRowAt` properties specified in ``numberOfItems(_:configureItemForRowAt:actionForSelectedRowAt:)`` method.
      */
-    public var listViewItems: [String]? {
+    public var listViewItems: [ListViewItemСompatible]? {
         didSet {
             self.numberOfItems = nil
             self.itemForRowAt = nil
@@ -55,7 +55,7 @@ public class ListView: UITableView {
      
      Sets with ``numberOfItems(_:itemForRowAt:)`` method.
      */
-    private var itemForRowAt: ((IndexPath) -> String)?
+    private var itemForRowAt: ((IndexPath) -> ListViewItemСompatible)?
     /**
      Handles a selected row.
      
@@ -116,7 +116,7 @@ public class ListView: UITableView {
      */
     public func numberOfItems(
         _ count: Int,
-        configureItemForRowAt: @escaping (IndexPath) -> String,
+        configureItemForRowAt: @escaping (IndexPath) -> ListViewItemСompatible,
         actionForSelectedRowAt: ((IndexPath) -> Void)? = nil)
     {
         self.listViewItems = nil
@@ -145,16 +145,10 @@ extension ListView: UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: UITableViewCell
-        if let reusableCell = tableView.dequeueReusableCell(withIdentifier: "UITableViewCell") {
-            cell = reusableCell
-        } else {
-            cell = UITableViewCell(style: .default, reuseIdentifier: "UITableViewCell")
-        }
-        
-        let item = self.listViewItems?[indexPath.item] ?? self.itemForRowAt?(indexPath)
-        cell.textLabel?.text = item
-        cell.detailTextLabel?.text = "test"
+        let item = self.listViewItems?[indexPath.item] ?? self.itemForRowAt?(indexPath) ?? ListViewItem()
+        let cell = tableView.dequeueReusableCell(for: item)
+        cell.textLabel?.text = item.title
+        cell.detailTextLabel?.text = item.detail
         
         return cell
     }
