@@ -24,7 +24,7 @@ import UIKit
  listView.numberOfItems(COUNT) { indexPath in
     // Handle indexPath and return item
  
- } actionForSelectedRowAt: { indexPath in
+ }.actionForSelectedRowAt { indexPath in
     // Set action for selected indexPath
  
  }
@@ -32,11 +32,12 @@ import UIKit
  listView.reloadData()
  ```
  */
-public class ListView: UITableView {
+open class ListView: UITableView {
     /**
      An items to present in the ``ListView``.
      
-     Resets `numberOfItems` and `configureItemForRowAt` properties specified in ``numberOfItems(_:configureItemForRowAt:actionForSelectedRowAt:)`` method.
+     Resets `numberOfItems` and `configureItemForRowAt`
+     properties specified in ``numberOfItems(_:configureItemForRowAt:)`` method.
      */
     public var listViewItems: [ListViewItemСompatible]? {
         didSet {
@@ -47,7 +48,7 @@ public class ListView: UITableView {
     /**
      A number of items to present in the listView.
      
-     Sets with ``numberOfItems(_:configureItemForRowAt:actionForSelectedRowAt:)`` method.
+     Sets with ``numberOfItems(_:configureItemForRowAt:)`` method.
      */
     private var numberOfItems: Int?
     /**
@@ -59,8 +60,7 @@ public class ListView: UITableView {
     /**
      Handles a selected row.
      
-     Sets with ``numberOfItems(_:configureItemForRowAt:actionForSelectedRowAt:)``
-     or ``actionForSelectedRowAt(_:)`` methods.
+     Sets with ``actionForSelectedRowAt(_:)`` methods.
      */
     private var actionForSelectedRowAt: ((IndexPath) -> Void)?
     
@@ -78,7 +78,7 @@ public class ListView: UITableView {
     /**
      Creates a list view object from data in an unarchiver.
      */
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         super.init(coder: coder)
         
         self.initialSetup()
@@ -106,7 +106,7 @@ public class ListView: UITableView {
      listView.numberOfItems(COUNT) { indexPath in
         // Handle indexPath and return item
      
-     } actionForSelectedRowAt: { indexPath in
+     }.actionForSelectedRowAt { indexPath in
         // Set action for selected indexPath
      
      }
@@ -114,17 +114,16 @@ public class ListView: UITableView {
      listView.reloadData()
      ```
      */
+    @discardableResult
     public func numberOfItems(
         _ count: Int,
-        configureItemForRowAt: @escaping (IndexPath) -> ListViewItemСompatible,
-        actionForSelectedRowAt: ((IndexPath) -> Void)? = nil)
-    {
+        configureItemForRowAt: @escaping (IndexPath) -> ListViewItemСompatible
+    ) -> ListView {
         self.listViewItems = nil
         self.numberOfItems = count
         self.itemForRowAt = configureItemForRowAt
-        if let actionForSelectedRowAt = actionForSelectedRowAt {
-            self.actionForSelectedRowAt = actionForSelectedRowAt
-        }
+        
+        return self
     }
     /**
      Handles a selected row.
