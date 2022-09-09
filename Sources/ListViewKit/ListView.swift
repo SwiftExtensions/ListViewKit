@@ -10,7 +10,7 @@ import UIKit
 /**
  A view that presents data using rows in a single column.
  
- It is a syntactic sugar for a
+ A syntactic sugar for a
  [UIKit](https://developer.apple.com/documentation/uikit)
  [UITableView](https://developer.apple.com/documentation/uikit/uitableview).
  
