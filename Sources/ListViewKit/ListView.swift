@@ -24,6 +24,9 @@ import UIKit
  listView.numberOfItems(COUNT) { indexPath in
     // Handle indexPath and return item
  
+ }.refineCell { cell, indexPath in
+    // Configure cell at indexPath
+ 
  }.actionForSelectedRowAt { indexPath in
     // Set action for selected indexPath
  
@@ -57,6 +60,14 @@ open class ListView: UITableView {
      Sets with ``numberOfItems(_:itemForRowAt:)`` method.
      */
     private var itemForRowAt: ((IndexPath) -> ListViewItemСompatible)?
+    /**
+     Configurates a
+     [UITableViewCell](https://developer.apple.com/documentation/uikit/uitableviewcell)
+     at specific indexPath to present in the listView.
+     
+     Sets with ``refineCellForRowAt(_:)`` method.
+     */
+    private var refineCell: ((UITableViewCell, IndexPath) -> Void)?
     /**
      Handles a selected row.
      
@@ -94,9 +105,6 @@ open class ListView: UITableView {
      Configurates an item for row at specific indexPath to present in the listView.
      
      Resets ``listViewItems`` value.
-     - Parameter count: A number of items to present in the listView.
-     - Parameter configureItemForRowAt: A closure to configurate an item for row at specific indexPath to present in the listView.
-     - Parameter actionForSelectedRowAt: A closure to handle a selected row.
      
      ``` swift
      import ListViewKit
@@ -106,13 +114,14 @@ open class ListView: UITableView {
      listView.numberOfItems(COUNT) { indexPath in
         // Handle indexPath and return item
      
-     }.actionForSelectedRowAt { indexPath in
-        // Set action for selected indexPath
-     
      }
      // Reload data
      listView.reloadData()
      ```
+     
+     - Parameter count: A number of items to present in the listView.
+     - Parameter configureItemForRowAt: A closure to configurate an item for row at specific indexPath to present in the listView.
+     - Parameter actionForSelectedRowAt: A closure to handle a selected row.
      */
     @discardableResult
     public func numberOfItems(
@@ -126,10 +135,43 @@ open class ListView: UITableView {
         return self
     }
     /**
+     Configurates a
+     [UITableViewCell](https://developer.apple.com/documentation/uikit/uitableviewcell)
+     at specific indexPath to present in the listView.
+     - Parameter action: A closure to configurates a
+     [UITableViewCell](https://developer.apple.com/documentation/uikit/uitableviewcell).
+     */
+    @discardableResult
+    public func refineCell(_ action: @escaping (UITableViewCell, IndexPath) -> Void
+    ) -> ListView {
+        self.refineCell = action
+        
+        return self
+    }
+    /**
      Handles a selected row.
+     
+     ``` swift
+     import ListViewKit
+     
+     let listView = ListView()
+     // Set list of items...
+     listView.listViewItems = ITEMS
+     // Or handle indexPath...
+     listView.numberOfItems(COUNT) { indexPath in
+        // Handle indexPath and return item
+     
+     }.actionForSelectedRowAt { indexPath in
+        // Set action for selected indexPath
+     
+     }
+     // Reload data
+     listView.reloadData()
+     ```
+     
      - Parameter action: A closure to handle a selected row.
      */
-    public func actionForSelectedRowAt(_ action: ((IndexPath) -> Void)?) {
+    public func actionForSelectedRowAt(_ action: @escaping (IndexPath) -> Void) {
         self.actionForSelectedRowAt = action
     }
     
@@ -148,6 +190,7 @@ extension ListView: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(for: item)
         cell.textLabel?.text = item.title
         cell.detailTextLabel?.text = item.detail
+        self.refineCell?(cell, indexPath)
         
         return cell
     }
