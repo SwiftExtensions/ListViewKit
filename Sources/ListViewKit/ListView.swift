@@ -24,7 +24,7 @@ import UIKit
  listView.numberOfItems(COUNT) { indexPath in
     // Handle indexPath and return item
  
- }.refineCell { cell, indexPath in
+ }.refineCells { cell, indexPath in
     // Configure cell at indexPath
  
  }.actionForSelectedRowAt { indexPath in
@@ -67,7 +67,7 @@ open class ListView: UITableView {
      
      Sets with ``refineCellForRowAt(_:)`` method.
      */
-    private var refineCell: ((UITableViewCell, IndexPath) -> Void)?
+    private var refineCells: ((UITableViewCell, IndexPath) -> Void)?
     /**
      Handles a selected row.
      
@@ -138,13 +138,15 @@ open class ListView: UITableView {
      Configurates a
      [UITableViewCell](https://developer.apple.com/documentation/uikit/uitableviewcell)
      at specific indexPath to present in the listView.
-     - Parameter action: A closure to configurates a
-     [UITableViewCell](https://developer.apple.com/documentation/uikit/uitableviewcell).
+     - Parameter handler: A closure to configurates a
+     [UITableViewCell](https://developer.apple.com/documentation/uikit/uitableviewcell)
+     at specific
+     [IndexPath](https://developer.apple.com/documentation/foundation/indexpath).
      */
     @discardableResult
-    public func refineCell(_ action: @escaping (UITableViewCell, IndexPath) -> Void
+    public func refineCells(_ handler: @escaping (UITableViewCell, IndexPath) -> Void
     ) -> ListView {
-        self.refineCell = action
+        self.refineCells = handler
         
         return self
     }
@@ -190,7 +192,7 @@ extension ListView: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(for: item)
         cell.textLabel?.text = item.title
         cell.detailTextLabel?.text = item.detail
-        self.refineCell?(cell, indexPath)
+        self.refineCells?(cell, indexPath)
         
         return cell
     }
